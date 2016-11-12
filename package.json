@@ -10,7 +10,8 @@
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --retries 2 --compilers js:babel-register --recursive  test/**/*.spec.js"
   },
   "keywords": [
-    "niconico client"
+    "niconico",
+    "niconama"
   ],
   "author": "pro_shunsuke",
   "license": "MIT",
