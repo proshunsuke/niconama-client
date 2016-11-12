@@ -6,7 +6,19 @@
 
 A client library for niconico live broadcast.
 
-## examples
+## Installation
+
+```
+npm i niconama-client
+```
+
+or
+
+```
+yarn add niconama-client
+```
+
+## Examples
 
 ### login
 ```javascript
@@ -41,3 +53,7 @@ client.liveComments(liveId, session, comment => {
 // ...  
 });
 ```
+
+## License
+
+[MIT](LICENSE) © [pro_shunsuke](https://twitter.com/pro_shunsuke)
