@@ -29,9 +29,10 @@ const password = 'password';
 
 const client = new NiconamaClient();
 client.login(email, password)
-  .then(function(session){
-    console.log(session); // user_session=user_session_00000_123abc
+  .then( session => {
+    console.log(session);
   });
+// user_session=user_session_00000_123abc
 ```
 
 ### comments of all rooms (co00000, 立ち見A, 立ち見B, etc)

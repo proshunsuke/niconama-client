@@ -10,6 +10,6 @@ if (typeof(email) === 'undefined' || typeof(password) === 'undefined') {
 
 const client = new NicoClient();
 client.login(email, password)
-  .then(function(session){
+  .then( session => {
     console.log(session);
   });
