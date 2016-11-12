@@ -1,5 +1,5 @@
 // @flow
-import NicoClient from '../dist/niconamaClient'
+import NiconamaClient from '../dist/niconamaClient'
 
 const liveId: string = process.argv[2];
 const session: string = process.argv[3];
@@ -8,7 +8,7 @@ if (typeof(liveId) === 'undefined' || typeof(session) === 'undefined') {
   throw new Error('Invalid parameter error. Please check parameters liveId or session.');
 }
 
-const client: NicoClient = new NicoClient();
+const client: NiconamaClient = new NiconamaClient();
 client.liveComments(liveId, session, comment => {
   if (comment['comment'].match(/^\/hb ifseetno \d.*$/) && comment['premium'] === '3') {
     return;

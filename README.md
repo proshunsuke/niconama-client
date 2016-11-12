@@ -10,10 +10,12 @@ A client library for niconico live broadcast.
 
 ### login
 ```javascript
+import NiconamaClient from 'niconama-client';
+
 const email = 'email';
 const password = 'password';
 
-const client = new NicoClient();
+const client = new NiconamaClient();
 client.login(email, password)
   .then(function(session){
     console.log(session); // user_session=user_session_00000_123abc
@@ -22,10 +24,12 @@ client.login(email, password)
 
 ### comments of all rooms (co00000, 立ち見A, 立ち見B, etc)
 ```javascript
+import NiconamaClient from 'niconama-client';
+
 const liveId = 'liveId';
 const session = 'session';
 
-const client: NicoClient = new NicoClient();
+const client: NicoClient = new NiconamaClient();
 client.liveComments(liveId, session, comment => {
   console.log(
     `コメ番: ${comment['no']}\tユーザーID: ${comment['user_id']}\t時間: ${timestampToDateformat(comment['date'])}\t
