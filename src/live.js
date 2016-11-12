@@ -75,6 +75,48 @@ export default class Live{
     );
   }
 
+  doComment(liveId: string, session: string) {
+    return this.getPlayerStatus(liveId, session)
+      .then((playerStatus) => {
+        if (playerStatus['_status'] === 'fail') {
+          throw ReferenceError('status fail.');
+        }
+        const room: RoomInfo = new RoomInfo(playerStatus);
+        const currentRoom = room.current();
+        const viewer = this.getViewer(currentRoom);
+        viewer.on('connect',data => {
+          viewer.setEncoding('utf-8');
+          viewer.write('<thread thread="'+this.getThread(currentRoom)+'" res_from="-5" version="20061206" />\0');
+          viewer.on('data', data => {
+            const threadInfo = this.getConnectInfo(data)['thread'];
+            const thread = threadInfo['_thread'];
+            const lastRes = threadInfo['_last_res'] || 0;
+            const blockNo = Math.floor(lastRes / 100);
+            return rp({
+              uri: `http://live.nicovideo.jp/api/getpostkey?thread=${thread}&block_no=${blockNo}`,
+              headers: {
+                Cookie: session
+              }
+            })
+              .then( response => {
+                const postKey = response.slice(8, response.length);
+                const date = new Date();
+                const unixTimestamp = date.getTime();
+                const startTime = playerStatus['stream']['start_time'];
+                const vpos = unixTimestamp - startTime;
+                const comment = 'comment"'+lastRes+'"';
+                const ticket = playerStatus['rtmp']['ticket'];
+                const userId = playerStatus['user']['user_id'];
+                viewer.write('<chat thread="'+thread +'" ticket="" vpos="'+vpos+'" postkey="'+postKey+'" mail="184" user_id="'+userId+'" premium="1">'+comment+'</chat>\0');
+                viewer.destroy();
+              }).catch( err => {
+                return Promise.reject(err);
+              });
+          });
+        });
+      });
+  }
+
   getPlayerStatus(liveId: string, session: string){
     return rp({
       uri: GET_PLAYERSTATUS_URL,
