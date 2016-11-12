@@ -1,0 +1,9 @@
+{
+  "presets": ["es2015", "stage-0"],
+  "plugins": ["add-module-exports", "transform-flow-strip-types"],
+  "env": {
+    "production": {
+      "plugins": ["babel-plugin-dev-expression"]
+    }
+  }
+}

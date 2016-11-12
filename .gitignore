@@ -1,0 +1,12 @@
+# Logs
+logs
+*.log
+
+# Dependency directory
+node_modules
+
+# OSX
+.DS_Store
+
+# idea
+.idea
