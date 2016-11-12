@@ -1,6 +1,6 @@
 {
   "name": "niconama-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Client library for the Nico live broadcast.",
   "repository": "https://github.com/proshunsuke/niconama-client",
   "main": "dist/niconamaClient.js",
