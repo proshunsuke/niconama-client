@@ -4,6 +4,8 @@
   "description": "Client library for the Nico live broadcast.",
   "main": "dist/nicoClient.js",
   "scripts": {
+    "build:source": "rimraf dist/ && babel src/ --out-dir dist/",
+    "build": "npm run build:source",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -36,10 +38,13 @@
     "eslint-loader": "^1.6.1",
     "eslint-plugin-flowtype-errors": "^1.5.0",
     "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.1",
     "eslint-plugin-mocha": "^4.7.0",
     "eslint-plugin-promise": "^3.3.2",
+    "eslint-plugin-react": "^6.6.0",
     "flow-bin": "^0.35.0",
     "mocha": "^3.1.2",
+    "rimraf": "^2.5.4",
     "sinon": "^1.17.6",
     "spectron": "^3.4.0",
     "tcomb": "^3.2.15"

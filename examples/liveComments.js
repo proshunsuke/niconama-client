@@ -1,5 +1,5 @@
 // @flow
-import NicoClient from '../src/niconamaClient'
+import NicoClient from '../dist/niconamaClient'
 
 const liveId: string = process.argv[2];
 const session: string = process.argv[3];
