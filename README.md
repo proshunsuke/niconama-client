@@ -1,4 +1,4 @@
-# Niconico live broadcast For Node.js [![Build Status](https://secure.travis-ci.org/proshunsuke/niconama-client.png?branch=master)](http://travis-ci.org/proshunsuke/niconama-client)
+# Niconico live broadcast For Node.js [![Build Status](https://travis-ci.org/proshunsuke/niconama-client.svg?branch=master)](https://travis-ci.org/proshunsuke/niconama-client)
 
 
 A client library for niconico live broadcast.
