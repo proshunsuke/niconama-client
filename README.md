@@ -29,7 +29,7 @@ import NiconamaClient from 'niconama-client';
 const liveId = 'liveId';
 const session = 'session';
 
-const client: NicoClient = new NiconamaClient();
+const client = new NiconamaClient();
 client.liveComments(liveId, session, comment => {
   console.log(
     `コメ番: ${comment['no']}\tユーザーID: ${comment['user_id']}\t時間: ${timestampToDateformat(comment['date'])}\t
