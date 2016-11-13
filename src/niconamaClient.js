@@ -15,8 +15,13 @@ export default class NicoClient {
     return client.comments(liveId, session, callback);
   }
 
-  doLiveComment(liveId: string, session: string) {
-    const client: liveClient = new liveClient();
-    return client.doComment(liveId, session);
+  //doLiveComment(liveId: string, session: string) {
+  //  const client: liveClient = new liveClient();
+  //  return client.doComment(liveId, session);
+  //}
+
+  doLiveComment(liveId: string, session: string, callback: any) {
+      const client: liveClient = new liveClient();
+      return client.doComment(liveId, session, callback);
   }
 }

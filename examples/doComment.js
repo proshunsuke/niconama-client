@@ -9,4 +9,19 @@ const session: string = process.argv[3];
 //}
 
 const client: NiconamaClient = new NiconamaClient();
-client.doLiveComment(liveId, session);
+//client.doLiveComment(liveId, session)
+//  .then( data => {
+//    console.log('成功');
+//    console.log(data);
+//  })
+//  .catch( err => {
+//    console.log('eraaaa');
+//    console.log(err);
+//  })
+//;
+
+client.doLiveComment(liveId, session, data => {
+  console.log('doLiveCommentのコールバックの中');
+  console.log(data);
+  console.log('コメント投稿に成功');
+});
