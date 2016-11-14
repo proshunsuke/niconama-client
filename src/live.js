@@ -8,6 +8,7 @@ import RoomInfo from './roomInfo';
 import type { roomType } from './roomInfo';
 
 export const GET_PLAYERSTATUS_URL = 'http://watch.live.nicovideo.jp/api/getplayerstatus';
+export const GET_POSTKEY_URL = 'http://live.nicovideo.jp/api/getpostkey';
 
 export default class Live{
   constructor() {}
@@ -33,17 +34,12 @@ export default class Live{
   }
 
   callbackComments(room: roomType, callback: (comment: CommentInfo) => void) {
-    const viewer = this.getViewer(room);
-    viewer.on('connect',data => {
-      viewer.setEncoding('utf-8');
-      viewer.write('<thread thread="'+this.getThread(room)+'" res_from="-5" version="20061206" />\0');
-      viewer.on('data', data => {
-        const chat = this.getConnectInfo(data)['chat'];
-        if (typeof(chat) === 'undefined') {
-          return;
-        }
-        callback(this.getCommentInfo(chat, room));
-      });
+    this.commentServerDataCallback(room, data => {
+      const chat = this.getConnectInfo(data)['chat'];
+      if (typeof(chat) === 'undefined') {
+        return;
+      }
+      callback(this.getCommentInfo(chat, room));
     });
   }
 
@@ -112,19 +108,23 @@ export default class Live{
     });
   }
 
-  getPostkeyOption(threadInfo: any, session) {
+  getPostkeyOption(threadInfo: any, session: string) {
     const thread = threadInfo['_thread'];
     const lastRes = threadInfo['_last_res'] || 0;
     const blockNo = Math.floor(lastRes / 100);
     return {
-      uri: `http://live.nicovideo.jp/api/getpostkey?thread=${thread}&block_no=${blockNo}`,
+      uri: GET_POSTKEY_URL,
+      qs: {
+        thread: thread,
+        block_no: blockNo
+      },
       headers: {
         Cookie: session
       }
     }
   }
 
-  commentRequestContent(playerStatus, postKey, comment) {
+  commentRequestContent(playerStatus: any, postKey: string, comment: string) {
     const date = new Date();
     const unixTimestamp = date.getTime();
     const startTime = playerStatus['stream']['start_time'];
@@ -135,10 +135,9 @@ export default class Live{
     return '<chat thread="'+thread +'" ticket="" vpos="'+vpos+'" postkey="'+postKey+'" mail="184" user_id="'+userId+'" premium="1">'+comment+'</chat>\0';
   }
 
-  commentServerDataCallback(room, callback) {
+  commentServerDataCallback(room: roomType, callback: any) {
     const viewer = this.getViewer(room);
     return viewer.on('connect', data => {
-      console.log('コメントサーバー接続後');
       viewer.setEncoding('utf-8');
       viewer.write('<thread thread="' + this.getThread(room) + '" res_from="-5" version="20061206" />\0');
       viewer.on('data', data => {
