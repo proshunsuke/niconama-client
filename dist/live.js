@@ -63,7 +63,7 @@ var Live = function () {
       });
     }
   }, {
-    key: 'callbackComments',
+    key: 'connectServer',
     value: function callbackComments(room, callback) {
       var _this2 = this;
 

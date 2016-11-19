@@ -1,4 +1,7 @@
 // @flow
+/**
+ * CommentInfo
+ */
 export default class CommentInfo {
   thread: string;
   no: string;

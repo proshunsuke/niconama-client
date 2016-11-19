@@ -1,7 +1,15 @@
 import { Duplex } from 'stream';
 import CommentInfo from '../model/commentInfo';
 
+/**
+ *
+ * LiveCommentStream
+ */
 export default class LiveCommentStream extends Duplex {
+  /**
+   *
+   * @param options
+   */
   constructor(options) {
     super(options);
     if (!options) options = {};
@@ -9,18 +17,41 @@ export default class LiveCommentStream extends Duplex {
     if (Duplex instanceof Function) Duplex.call(this, options);
   }
 
+  /**
+   *
+   * @param chunk
+   * @param encoding
+   * @param callback
+   * @private
+   */
   _write(chunk, encoding, callback) {
     this.push(chunk);
     callback();
   }
 
+  /**
+   *
+   * @param size
+   * @private
+   */
   _read(size) {
   }
 
+  /**
+   *
+   * @param chat
+   * @param room
+   */
   writeComment(chat, room) {
     this.write(this.getCommentInfo(chat, room));
   }
 
+  /**
+   *
+   * @param chat
+   * @param room
+   * @returns {CommentInfo}
+   */
   getCommentInfo(chat, room) {
     return new CommentInfo(
       chat['_thread'],

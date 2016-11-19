@@ -10,6 +10,10 @@ import type { roomType } from './model/roomInfo';
 
 const GET_PLAYERSTATUS_URL = 'http://watch.live.nicovideo.jp/api/getplayerstatus';
 
+/**
+ *
+ * Live client
+ */
 export default class Live{
   liveId: string;
   session: string;
@@ -17,20 +21,42 @@ export default class Live{
   playerStatus: any;
   currentViewer: any;
   commentStream: LiveCommentStream;
+
+  /**
+   *
+   * @param liveId
+   * @param session
+   */
   constructor(liveId: string, session: string) {
     this.liveId = liveId;
     this.session = session;
     this.isAlreadyGetComments = false;
   }
 
+  /**
+   *
+   * @returns {LiveCommentStream}
+   */
   getCommentStream(): LiveCommentStream {
     return this.commentStream = new LiveCommentStream();
   }
 
+  /**
+   *
+   * @param comment
+   * @param option
+   * @returns {Promise.<any>}
+   */
   doComment(comment: string, option: string): Promise<any> {
     return DoComment.doComment(this.currentViewer, this.playerStatus, this.session, comment, option);
   }
 
+  /**
+   *
+   * connect to niconico comment servers
+   *
+   * @returns {Promise.<any>}
+   */
   comments(): Promise<any> {
     if ( this.isAlreadyGetComments ) return Promise.resolve();
     return this.getPlayerStatus()
@@ -41,7 +67,7 @@ export default class Live{
       })
       .then( () => {
         const room: RoomInfo = RoomInfoFactory.createRoomInfo(this.playerStatus);
-        return Promise.all(room.allRooms().map( (r) => this.callbackComments(r)))
+        return Promise.all(room.allRooms().map( (r) => this.connectServer(r)))
       })
       .then( result => {
         this.isAlreadyGetComments = true;
@@ -49,10 +75,16 @@ export default class Live{
       });
   }
 
-  callbackComments(room: roomType): Promise<any> {
+  /**
+   *
+   * @param room
+   * @returns {Promise}
+   */
+  connectServer(room: roomType): Promise<any> {
     return new Promise( (resolve, reject) => {
-      this.commentServerDataCallback(room, (viewer, data) => {
+      this.connectServerCallback(room, (viewer, data) => {
         const connectInfo = Common.xmlToJson(data);
+        // When there is thread information, ignore it since it is just after receiving comment server information
         if (typeof connectInfo['thread'] !== 'undefined') return resolve();
         const chat = connectInfo['chat'];
         if (typeof(chat) === 'undefined') return resolve();
@@ -62,11 +94,18 @@ export default class Live{
     });
   }
 
-  commentServerDataCallback(room: roomType, callback: any): any {
+  /**
+   *
+   * @param room
+   * @param callback
+   * @returns {*}
+   */
+  connectServerCallback(room: roomType, callback: any): any {
     const viewer = net.connect(room['port'], room['addr']);
-    if (room['isCurrent']) this.currentViewer = viewer;
+    if (room['isCurrent']) this.currentViewer = viewer; // set current room connect infomation
     return viewer.on('connect', data => {
       viewer.setEncoding('utf-8');
+      // write thread informations, and receive comment server information
       viewer.write(`<thread thread="${Common.getThread(room)}" res_from="-5" version="20061206" />\0`);
       viewer.on('data', data => {
         callback(viewer, data);
@@ -74,6 +113,10 @@ export default class Live{
     });
   }
 
+  /**
+   *
+   * @returns {Promise.<T>|*}
+   */
   getPlayerStatus(): Promise<any> {
     return rp({
       uri: GET_PLAYERSTATUS_URL,

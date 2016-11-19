@@ -6,14 +6,29 @@ import RoomInfoFactory from '../lib/roomInfoFactory';
 
 const GET_POSTKEY_URL = 'http://live.nicovideo.jp/api/getpostkey';
 
+/**
+ *
+ * DoComment
+ */
 export default class DoComment{
   constructor() {}
 
+  /**
+   *
+   * do comment with options
+   *
+   * @param currentViewer
+   * @param playerStatus
+   * @param session
+   * @param comment
+   * @param option
+     * @returns {Promise}
+   */
   static doComment(currentViewer :any, playerStatus: any, session: string, comment: string, option: string): Promise<any> {
     const room: RoomInfo = RoomInfoFactory.createRoomInfo(playerStatus);
     const currentRoom = room.current();
     return new Promise( (resolve, reject) => {
-      let isReady: boolean = true;
+      let isReady: boolean = true; // for waiting for receiving do comment response
       currentViewer.write(`<thread thread="${Common.getThread(currentRoom)}" res_from="-5" version="20061206" />\0`);
       currentViewer.on('data', data => {
         if (!isReady) return;
@@ -34,6 +49,14 @@ export default class DoComment{
     });
   }
 
+  /**
+   *
+   * @param playerStatus
+   * @param postKey
+   * @param comment
+   * @param option
+     * @returns {*}
+   */
   static commentRequestContent(playerStatus: any, postKey: string, comment: string, option: string) {
     const date = new Date();
     const unixTimestamp = date.getTime();
@@ -46,6 +69,12 @@ export default class DoComment{
     return `<chat thread="${thread}" ticket="${ticket}" vpos="${vpos}" postkey="${postKey}" mail="${option}" user_id="${userId}" premium="${isPremium}">${comment}</chat>\0`;
   }
 
+  /**
+   *
+   * @param threadInfo
+   * @param session
+   * @returns {Promise.<T>|*}
+   */
   static getPostkey(threadInfo: any, session: string): Promise<any> {
     const thread = threadInfo['_thread'];
     const lastRes = threadInfo['_last_res'] || 0;
