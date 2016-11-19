@@ -2,41 +2,38 @@
 import rp from 'request-promise';
 import RoomInfo from '../model/roomInfo';
 import Common from '../lib/common';
+import RoomInfoFactory from '../lib/roomInfoFactory';
 
-export const GET_POSTKEY_URL = 'http://live.nicovideo.jp/api/getpostkey';
+const GET_POSTKEY_URL = 'http://live.nicovideo.jp/api/getpostkey';
 
 export default class DoComment{
   constructor() {}
 
   static doComment(currentViewer :any, playerStatus: any, session: string, comment: string, option: string): Promise<any> {
-    const room: RoomInfo = new RoomInfo(playerStatus);
+    const room: RoomInfo = RoomInfoFactory.createRoomInfo(playerStatus);
     const currentRoom = room.current();
     return new Promise( (resolve, reject) => {
       let isReady: boolean = true;
-      currentViewer.write('<thread thread="' + Common.getThread(currentRoom) + '" res_from="-5" version="20061206" />\0');
+      currentViewer.write(`<thread thread="${Common.getThread(currentRoom)}" res_from="-5" version="20061206" />\0`);
       currentViewer.on('data', data => {
         if (!isReady) return;
-        const chatResult = Common.getConnectInfo(data)['chat_result'];
+        const chatResult = Common.xmlToJson(data)['chat_result'];
         if (chatResult) {
           isReady = true;
           if (chatResult['_status'] !== '0') return reject(`Failed to o comment. status: ${chatResult['_status']}`);
           return resolve(chatResult);
         }
-        const threadInfo = Common.getConnectInfo(data)['thread'];
+        const threadInfo = Common.xmlToJson(data)['thread'];
         if (typeof threadInfo === 'undefined') return;
         isReady = false;
-        return rp(this.getPostkeyOption(threadInfo, session))
-          .then( response => {
-            currentViewer.write(this.commentRequestContent(playerStatus, response.slice(8, response.length), comment, option));
-          }).catch( err => {
-            return reject(err);
+        return this.getPostkey(threadInfo, session)
+          .then( postKey => {
+            currentViewer.write(this.commentRequestContent(playerStatus, postKey, comment, option));
           });
       });
     });
   }
 
-  // mail(コマンド 184含む)をoptionとして外から渡す
-  // user_idはplayerStatusから渡す
   static commentRequestContent(playerStatus: any, postKey: string, comment: string, option: string) {
     const date = new Date();
     const unixTimestamp = date.getTime();
@@ -49,11 +46,11 @@ export default class DoComment{
     return `<chat thread="${thread}" ticket="${ticket}" vpos="${vpos}" postkey="${postKey}" mail="${option}" user_id="${userId}" premium="${isPremium}">${comment}</chat>\0`;
   }
 
-  static getPostkeyOption(threadInfo: any, session: string): {uri: string; qs: {thread: string; block_no: number}; headers: {Cookie: string}} {
+  static getPostkey(threadInfo: any, session: string): Promise<any> {
     const thread = threadInfo['_thread'];
     const lastRes = threadInfo['_last_res'] || 0;
     const blockNo = Math.floor(lastRes / 100);
-    return {
+    return rp({
       uri: GET_POSTKEY_URL,
       qs: {
         thread: thread,
@@ -62,6 +59,9 @@ export default class DoComment{
       headers: {
         Cookie: session
       }
-    }
+    })
+      .then( (response) => {
+        return Promise.resolve(response.slice(8, response.length));
+      })
   }
 }

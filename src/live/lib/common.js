@@ -8,8 +8,8 @@ export default class Common{
     return room['thread'];
   }
 
-  static getConnectInfo(connectInfoXml: string): any {
+  static xmlToJson(xmlString: string): any {
     const x2js = new X2JS;
-    return x2js.xml2js(connectInfoXml);
+    return x2js.xml2js(xmlString);
   }
 }

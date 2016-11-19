@@ -72,7 +72,7 @@ var Live = function () {
         viewer.setEncoding('utf-8');
         viewer.write('<thread thread="' + _this2.getThread(room) + '" res_from="-5" version="20061206" />\0');
         viewer.on('data', function (data) {
-          var chat = _this2.getConnectInfo(data)['chat'];
+          var chat = _this2.xmlToJson(data)['chat'];
           if (typeof chat === 'undefined') {
             return;
           }
@@ -115,7 +115,7 @@ var Live = function () {
       });
     }
   }, {
-    key: 'getConnectInfo',
+    key: 'xmlToJson',
     value: function getConnectInfo(connectInfoXml) {
       var x2js = new _x2js2.default();
       return x2js.xml2js(connectInfoXml);

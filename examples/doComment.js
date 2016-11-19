@@ -34,7 +34,7 @@ client.liveComments()
     let interval = setInterval( () => {
       commentCount++;
       if (commentCount >= 5) clearInterval(interval);
-      client.doLiveComment(comment, option);
+      client.doLiveComment(`${comment}${commentCount}`, option);
       console.log(`success to do comment. ${commentCount}`);
     }, 5000);
   })
