@@ -10,13 +10,18 @@ if (typeof(liveId) === 'undefined' || typeof(session) === 'undefined' || typeof(
 }
 
 const client: NiconamaClient = new NiconamaClient();
+client.setLiveInfo(liveId, session);
 
-//client.doLiveComment(liveId, session, comment)
-//  .then(data => {
-//    console.log('コメント投稿に成功');
-//    console.log(data);
-//  })
-//  .catch(err => {
-//    console.log('コメント投稿に失敗');
-//    console.log(err);
-//  });
+let commentCout = 0;
+let interval = setInterval(() => {
+  if (commentCout === 5) clearInterval(interval);
+  commentCout++;
+  client.liveComments()
+    .then(() => {
+      client.doLiveComment(comment);
+      console.log(`success to do comment. ${commentCout}`);
+    })
+    .catch( err => {console.log(err);});
+} , 100);
+
+

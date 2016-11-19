@@ -1,6 +1,6 @@
 // @flow
 import NiconamaClient from '../src/niconamaClient'
-import CommentInfo from '../src/commentInfo';
+import CommentInfo from '../src/live/model/commentInfo';
 
 const liveId: string = process.argv[2];
 const session: string = process.argv[3];
@@ -11,7 +11,7 @@ if (typeof liveId === 'undefined' || typeof session === 'undefined') {
 
 const client: NiconamaClient = new NiconamaClient();
 client.setLiveInfo(liveId, session);
-const commentStream = client.createCommentStream();
+const commentStream = client.createLiveCommentStream();
 commentStream.on('readable', () => {
   const comment: CommentInfo = commentStream.read();
   if (comment.comment.match(/^\/hb ifseetno \d.*$/) && comment.premium === '3') {

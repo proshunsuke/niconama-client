@@ -1,6 +1,6 @@
 // @flow
-import { ADDR_PORTS } from './addrPorts';
-import { ROOM_LABELS } from './roomLabels';
+import { ADDR_PORTS } from './../constraints/addrPorts';
+import { ROOM_LABELS } from './../constraints/roomLabels';
 
 export type roomType = { addr: string; port: number; thread: number; roomLabel: string; isCurrent: boolean};
 

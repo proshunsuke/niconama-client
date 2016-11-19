@@ -67,7 +67,7 @@ var Live = function () {
     value: function callbackComments(room, callback) {
       var _this2 = this;
 
-      var viewer = this.getViewer(room);
+      var viewer = this.connectRoom(room);
       viewer.on('connect', function (data) {
         viewer.setEncoding('utf-8');
         viewer.write('<thread thread="' + _this2.getThread(room) + '" res_from="-5" version="20061206" />\0');
@@ -81,7 +81,7 @@ var Live = function () {
       });
     }
   }, {
-    key: 'getViewer',
+    key: 'connectRoom',
     value: function getViewer(room) {
       return _net2.default.connect(room['port'], room['addr']);
     }
