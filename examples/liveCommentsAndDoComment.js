@@ -1,4 +1,25 @@
 // @flow
+/**
+ *
+ * ex.
+ * % ./node_modules/.bin/flow; ./node_modules/.bin/babel-node examples/liveCommentsAndDoComment.js lv000000000 user_session=user_session_0000_123abc comment big 184 red
+ * No errors!
+ * success to do comment. 1
+ * コメ番: 9       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:32:50
+ *   コメント: comment1    プレミア: 1      NGスコア: -120  部屋: co0000000
+ * success to do comment. 2
+ * success to do comment. 3
+ * コメ番: 10      ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:33:4
+ *   コメント: comment2    プレミア: 1      NGスコア: -120  部屋: co0000000
+ * コメ番: 11      ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:33:4
+ *   コメント: comment3    プレミア: 1      NGスコア: -120  部屋: co0000000
+ * success to do comment. 4
+ * コメ番: 12      ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:33:5
+ *   コメント: comment4    プレミア: 1      NGスコア: -120  部屋: co0000000
+ * success to do comment. 5
+ * コメ番: 13      ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:33:10
+ *   コメント: comment5    プレミア: 1      NGスコア: -120  部屋: co0000000
+ */
 import NiconamaClient from '../src/niconamaClient'
 import CommentInfo from '../src/live/model/commentInfo';
 
@@ -40,6 +61,7 @@ commentStream.on('readable', () => {
   );
 });
 
+// comment 5 times every 5 seconds
 client.liveComments()
   .then( () => {
     let commentCount = 0;

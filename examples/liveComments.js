@@ -1,4 +1,24 @@
 // @flow
+
+/**
+ *
+ * ex.
+ *  % ./node_modules/.bin/flow; ./node_modules/.bin/babel-node examples/liveComments lv000000000 user_session=user_session_00000000_abc123
+ * No errors!
+ *   Success to connect all comment servers
+ * コメ番: 1       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:27
+ * コメント: a   プレミア: 3      NGスコア: undefined     部屋: co0000000
+ * コメ番: 1       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:27
+ * コメント: a   プレミア: 3      NGスコア: undefined     部屋: 立ち見A列
+ * コメ番: 2       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:28
+ * コメント: b   プレミア: 3      NGスコア: undefined     部屋: co0000000
+ * コメ番: 2       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:28
+ * コメント: b   プレミア: 3      NGスコア: undefined     部屋: 立ち見A列
+ * コメ番: 3       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:31
+ * コメント: c   プレミア: 3      NGスコア: undefined     部屋: 立ち見A列
+ * コメ番: 3       ユーザーID: YVeNI0zBeyro9LW5oNgxCWeQ0b8 時間: 5:25:31
+ * コメント: c   プレミア: 3      NGスコア: undefined     部屋: co0000000
+ */
 import NiconamaClient from '../src/niconamaClient'
 import CommentInfo from '../src/live/model/commentInfo';
 

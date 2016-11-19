@@ -1,4 +1,16 @@
 // @flow
+
+/**
+ *
+ * ex.
+ * % ./node_modules/.bin/flow; ./node_modules/.bin/babel-node examples/doComment.js lv282494871 user_session=user_session_13294831_62b5680bddf575eed836352e89c02b57b926254f0f28598c5393a1863430e1a2 comment big 184 red
+ * No errors!
+ * success to do comment. 1
+ * success to do comment. 2
+ * success to do comment. 3
+ * success to do comment. 4
+ * success to do comment. 5
+ */
 import NiconamaClient from '../src/niconamaClient'
 
 const liveId: string = process.argv[2];
@@ -28,6 +40,7 @@ if (typeof(liveId) === 'undefined' || typeof(session) === 'undefined' || typeof(
 const client: NiconamaClient = new NiconamaClient();
 client.setLiveInfo(liveId, session);
 
+// comment 5 times every 5 seconds
 client.liveComments()
   .then( () => {
     let commentCount = 0;
