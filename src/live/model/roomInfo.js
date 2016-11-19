@@ -21,9 +21,7 @@ export default class RoomInfo {
   }
 
   arena(): roomType {
-    let room = this.roomAddrPort(0);
-    room['roomLabel'] = this.community;
-    return room;
+    return this.roomAddrPort(0);
   }
 
   a(): roomType {
@@ -65,6 +63,7 @@ export default class RoomInfo {
   roomAddrPort(roomLabelIndex: number) :roomType {
     let addrPorts = ADDR_PORTS[(this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex) % ADDR_PORTS.length];
     addrPorts['roomLabel'] = String(ROOM_LABELS[roomLabelIndex]).substr(2, String(ROOM_LABELS[roomLabelIndex]).length - 4);
+    if (roomLabelIndex === 0) addrPorts['roomLabel'] = this.community;
     addrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
     addrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
     return addrPorts;

@@ -27,8 +27,8 @@ export default class Live{
     return this.commentStream = new LiveCommentStream();
   }
 
-  doComment(comment: string): Promise<any> {
-    return DoComment.doComment(this.currentViewer, this.playerStatus, this.session, comment);
+  doComment(comment: string, option: string): Promise<any> {
+    return DoComment.doComment(this.currentViewer, this.playerStatus, this.session, comment, option);
   }
 
   comments(): Promise<any> {
@@ -64,7 +64,9 @@ export default class Live{
   callbackComments(room: roomType): Promise<any> {
     return new Promise( (resolve, reject) => {
       this.commentServerDataCallback(room, (viewer, data) => {
-        const chat = Common.getConnectInfo(data)['chat'];
+        const connectInfo = Common.getConnectInfo(data);
+        if (typeof connectInfo['thread'] !== 'undefined') return resolve();
+        const chat = connectInfo['chat'];
         if (typeof(chat) === 'undefined') return resolve();
         if (this.commentStream) this.commentStream.writeComment(chat, room);
         return resolve();

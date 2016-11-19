@@ -26,8 +26,8 @@ export default class NiconamaClient{
     return this.liveClient.comments();
   }
 
-  doLiveComment(comment: string): Promise<any> {
+  doLiveComment(comment: string, option: string): Promise<any> {
     if (!this.liveClient) Promise.reject('Live instance is not defined');
-    return this.liveClient.doComment(comment);
+    return this.liveClient.doComment(comment, option);
   }
 }
