@@ -2,10 +2,9 @@
 import { ADDR_PORTS } from './addrPorts';
 import { ROOM_LABELS } from './roomLabels';
 
-export type roomType = { addr: string; port: number; thread: number; roomLabel: string };
+export type roomType = { addr: string; port: number; thread: number; roomLabel: string; isCurrent: boolean};
 
 export default class RoomInfo {
-  playerStatus: any;
   thread: number;
   community: string;
   currentRoomIndex: number;
@@ -17,64 +16,63 @@ export default class RoomInfo {
     this.setCurrentAddrPortIndex(playerStatus['ms']['addr'], Number(playerStatus['ms']['port']));
   }
 
-  current() {
+  current(): roomType {
     return this.roomAddrPort(this.currentRoomIndex);
   }
 
-  arena() {
+  arena(): roomType {
     let room = this.roomAddrPort(0);
     room['roomLabel'] = this.community;
     return room;
   }
 
-  a() {
+  a(): roomType {
     return this.roomAddrPort(1);
   }
 
-  b() {
+  b(): roomType {
     return this.roomAddrPort(2);
   }
 
-  c() {
+  c(): roomType {
     return this.roomAddrPort(3);
   }
 
-  d() {
+  d(): roomType {
     return this.roomAddrPort(4);
   }
 
-  e() {
+  e(): roomType {
     return this.roomAddrPort(5);
   }
 
-  f() {
+  f(): roomType {
     return this.roomAddrPort(6);
   }
 
-  g() {
+  g(): roomType {
     return this.roomAddrPort(7);
   }
 
-  h() {
+  h(): roomType {
     return this.roomAddrPort(8);
   }
 
-  i() {
+  i(): roomType {
     return this.roomAddrPort(9);
   }
 
-  roomAddrPort(roomLabelIndex: number) {
-    let addrPorts = ADDR_PORTS[this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex];
+  roomAddrPort(roomLabelIndex: number) :roomType {
+    let addrPorts = ADDR_PORTS[(this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex) % ADDR_PORTS.length];
     addrPorts['roomLabel'] = String(ROOM_LABELS[roomLabelIndex]).substr(2, String(ROOM_LABELS[roomLabelIndex]).length - 4);
     addrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
+    addrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
     return addrPorts;
   }
 
   setCurrentRoomIndex(roomLabel: string) {
     for(let i = 0; i < ROOM_LABELS.length; i++) {
-      if (roomLabel.match(ROOM_LABELS[i])) {
-        this.currentRoomIndex = i;
-      }
+      if (roomLabel.match(ROOM_LABELS[i])) this.currentRoomIndex = i;
     }
   }
 

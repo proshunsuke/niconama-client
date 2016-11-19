@@ -5,53 +5,143 @@ import net from 'net';
 import X2JS from 'x2js';
 import CommentInfo from './commentInfo';
 import RoomInfo from './roomInfo';
+import LiveCommentStream from './liveCommentStream';
 import type { roomType } from './roomInfo';
 
 export const GET_PLAYERSTATUS_URL = 'http://watch.live.nicovideo.jp/api/getplayerstatus';
 export const GET_POSTKEY_URL = 'http://live.nicovideo.jp/api/getpostkey';
 
 export default class Live{
-  constructor() {}
+  liveId: string;
+  session: string;
+  playerStatus: any;
+  currentViewer: any;
+  commentStream: LiveCommentStream;
+  constructor(liveId: string, session: string) {
+    this.liveId = liveId;
+    this.session = session;
+    this.currentViewer = null;
+  }
 
-  comments(liveId: string, session: string, callback: (comment: CommentInfo) => void) {
-    return this.getPlayerStatus(liveId, session)
-      .then((playerStatus) => {
-        if (playerStatus['_status'] === 'fail') {
-          throw ReferenceError('status fail.');
-        }
-        const room: RoomInfo = new RoomInfo(playerStatus);
-        this.callbackComments(room.arena(), callback);
-        this.callbackComments(room.a(), callback);
-        this.callbackComments(room.b(), callback);
-        this.callbackComments(room.c(), callback);
-        this.callbackComments(room.d(), callback);
-        this.callbackComments(room.e(), callback);
-        this.callbackComments(room.f(), callback);
-        this.callbackComments(room.g(), callback);
-        this.callbackComments(room.h(), callback);
-        this.callbackComments(room.i(), callback);
+  getCommentStream(): LiveCommentStream {
+    return this.commentStream = new LiveCommentStream();
+  }
+
+  comments(): Promise<any> {
+    return this.getPlayerStatus()
+      .then( xmlString => {
+        const x2js: X2JS = new X2JS;
+        this.playerStatus = x2js.xml2js(xmlString)['getplayerstatus'];
+        if (this.playerStatus['_status'] === 'fail') return Promise.reject('status fail.');
+        return Promise.resolve();
+      })
+      .then( () => {
+        const room: RoomInfo = new RoomInfo(this.playerStatus);
+        return Promise.all([
+          this.callbackComments(room.arena()),
+          this.callbackComments(room.a()),
+          this.callbackComments(room.b()),
+          this.callbackComments(room.c()),
+          this.callbackComments(room.d()),
+          this.callbackComments(room.e()),
+          this.callbackComments(room.f()),
+          this.callbackComments(room.g()),
+          this.callbackComments(room.h()),
+          this.callbackComments(room.i())
+        ])
+      })
+      .then( result => {
+        return Promise.resolve();
       });
   }
 
-  callbackComments(room: roomType, callback: (comment: CommentInfo) => void) {
-    this.commentServerDataCallback(room, data => {
-      const chat = this.getConnectInfo(data)['chat'];
-      if (typeof(chat) === 'undefined') {
-        return;
-      }
-      callback(this.getCommentInfo(chat, room));
+  callbackComments(room: roomType): Promise<any> {
+    return new Promise( (resolve, reject) => {
+      this.commentServerDataCallback(room, (viewer, data) => {
+        const chat = this.getConnectInfo(data)['chat'];
+        if (typeof(chat) === 'undefined') return resolve();
+        this.commentStream.write(this.getCommentInfo(chat, room));
+        return resolve();
+      });
     });
   }
 
-  getViewer(room: roomType) {
+  commentServerDataCallback(room: roomType, callback: any): any {
+    const viewer = this.getViewer(room);
+    if (room['isCurrent']) this.currentViewer = viewer;
+    return viewer.on('connect', data => {
+      viewer.setEncoding('utf-8');
+      viewer.write('<thread thread="' + this.getThread(room) + '" res_from="-5" version="20061206" />\0');
+      viewer.on('data', data => {
+        callback(viewer, data);
+      });
+    });
+  }
+
+  testDoComment(comment: string) {
+    const room: RoomInfo = new RoomInfo(this.playerStatus);
+    const currentRoom = room.current();
+    return new Promise( (resolve, reject) => {
+      this.currentViewer.write('<thread thread="' + this.getThread(currentRoom) + '" res_from="-5" version="20061206" />\0');
+      this.currentViewer.on('data', data => {
+        const chatResult = this.getConnectInfo(data)['chat_result'];
+        if (chatResult) {
+          this.currentViewer.destroy();
+          if (chatResult['_status'] !== '0') return reject(`Do comment failed. status: ${chatResult['_status']}`);
+          return resolve(chatResult);
+        }
+        const threadInfo = this.getConnectInfo(data)['thread'];
+        if (typeof threadInfo === 'undefined') return;
+        return rp(this.getPostkeyOption(threadInfo, this.session))
+          .then( response => {
+            this.currentViewer.write(this.commentRequestContent(this.playerStatus, response.slice(8, response.length), comment));
+          }).catch( err => {
+            return reject(err);
+          });
+      });
+    });
+  }
+
+  doComment(liveId: string, session: string, comment: string) {
+    return new Promise( (resolve, reject) => {
+      return this.getPlayerStatus(liveId, session)
+        .then( playerStatus => {
+          if (playerStatus['_status'] === 'fail') return reject('Status is fail. The broadcasting has ended.');
+          const room: RoomInfo = new RoomInfo(playerStatus);
+          const currentRoom = room.current();
+          return this.commentServerDataCallback(currentRoom, (viewer, data) => {
+            const chatResult = this.getConnectInfo(data)['chat_result'];
+            if (chatResult) {
+              viewer.destroy();
+              if (chatResult['_status'] !== '0') return reject(`Do comment failed. status: ${chatResult['_status']}`);
+              return resolve(chatResult);
+            }
+            const threadInfo = this.getConnectInfo(data)['thread'];
+            if (typeof(threadInfo) === 'undefined') return;
+            return rp(this.getPostkeyOption(threadInfo))
+              .then( response => {
+                viewer.write(this.commentRequestContent(playerStatus, response.slice(8, response.length), comment));
+              }).catch( err => {
+                viewer.destroy();
+                return reject(err);
+              });
+          });
+        })
+        .catch( err => {
+          return reject(err);
+        });
+    });
+  }
+
+  getViewer(room: roomType): any {
     return net.connect(room['port'], room['addr']);
   }
 
-  getThread(room: roomType) {
+  getThread(room: roomType): number {
     return room['thread'];
   }
 
-  getCommentInfo(chat: any, room: roomType){
+  getCommentInfo(chat: any, room: roomType): CommentInfo{
     return new CommentInfo(
       chat['_thread'],
       chat['_no'],
@@ -71,44 +161,7 @@ export default class Live{
     );
   }
 
-  doComment(liveId: string, session: string, comment: string) {
-    return new Promise( (resolve, reject) => {
-      return this.getPlayerStatus(liveId, session)
-        .then( playerStatus => {
-          if (playerStatus['_status'] === 'fail') {
-            return reject('Status is fail. The broadcasting has ended.');
-          }
-          const room: RoomInfo = new RoomInfo(playerStatus);
-          const currentRoom = room.current();
-          return this.commentServerDataCallback(currentRoom, (viewer, data) => {
-            const chatResult = this.getConnectInfo(data)['chat_result'];
-            if (chatResult) {
-              viewer.destroy();
-              if (chatResult['_status'] !== '0') {
-                return reject(`Do comment failed. status: ${chatResult['_status']}`);
-              }
-              return resolve(chatResult);
-            }
-            const threadInfo = this.getConnectInfo(data)['thread'];
-            if (typeof(threadInfo) === 'undefined') {
-              return;
-            }
-            return rp(this.getPostkeyOption(threadInfo, session))
-              .then( response => {
-                viewer.write(this.commentRequestContent(playerStatus, response.slice(8, response.length), comment));
-              }).catch( err => {
-                viewer.destroy();
-                return reject(err);
-              });
-          });
-        })
-        .catch( err => {
-          return reject(err);
-        });
-    });
-  }
-
-  getPostkeyOption(threadInfo: any, session: string) {
+  getPostkeyOption(threadInfo: any): {uri: string; qs: {thread: string; block_no: number}; headers: {Cookie: string}} {
     const thread = threadInfo['_thread'];
     const lastRes = threadInfo['_last_res'] || 0;
     const blockNo = Math.floor(lastRes / 100);
@@ -119,7 +172,7 @@ export default class Live{
         block_no: blockNo
       },
       headers: {
-        Cookie: session
+        Cookie: this.session
       }
     }
   }
@@ -135,38 +188,25 @@ export default class Live{
     return '<chat thread="'+thread +'" ticket="" vpos="'+vpos+'" postkey="'+postKey+'" mail="184" user_id="'+userId+'" premium="1">'+comment+'</chat>\0';
   }
 
-  commentServerDataCallback(room: roomType, callback: any) {
-    const viewer = this.getViewer(room);
-    return viewer.on('connect', data => {
-      viewer.setEncoding('utf-8');
-      viewer.write('<thread thread="' + this.getThread(room) + '" res_from="-5" version="20061206" />\0');
-      viewer.on('data', data => {
-        callback(viewer, data);
-      });
-    });
-  }
-
-  getPlayerStatus(liveId: string, session: string){
+  getPlayerStatus(): Promise<any> {
     return rp({
       uri: GET_PLAYERSTATUS_URL,
       qs: {
-        v: liveId
+        v: this.liveId
       },
       headers: {
-        Cookie: session
+        Cookie: this.session
       }
     })
       .then( xmlString => {
-        const x2js = new X2JS;
-        const playerStatus = x2js.xml2js(xmlString)['getplayerstatus'];
-        return Promise.resolve(playerStatus);
+        return Promise.resolve(xmlString);
       })
       .catch( err => {
         return Promise.reject(err);
-      });
+      })
   }
 
-  getConnectInfo(connectInfoXml: string) {
+  getConnectInfo(connectInfoXml: string): any {
     const x2js = new X2JS;
     return x2js.xml2js(connectInfoXml);
   }

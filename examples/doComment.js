@@ -11,12 +11,12 @@ if (typeof(liveId) === 'undefined' || typeof(session) === 'undefined' || typeof(
 
 const client: NiconamaClient = new NiconamaClient();
 
-client.doLiveComment(liveId, session, comment)
-  .then(data => {
-    console.log('コメント投稿に成功');
-    console.log(data);
-  })
-  .catch(err => {
-    console.log('コメント投稿に失敗');
-    console.log(err);
-  });
+//client.doLiveComment(liveId, session, comment)
+//  .then(data => {
+//    console.log('コメント投稿に成功');
+//    console.log(data);
+//  })
+//  .catch(err => {
+//    console.log('コメント投稿に失敗');
+//    console.log(err);
+//  });
