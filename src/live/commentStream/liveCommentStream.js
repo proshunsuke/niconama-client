@@ -36,6 +36,7 @@ export default class LiveCommentStream extends Duplex {
       chat['_score'],
       chat['_yourpost'],
       chat['_deleted'],
+      chat['_origin'],
       chat['__text'],
       room['roomLabel']
     );

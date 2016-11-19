@@ -32,9 +32,8 @@ client.setLiveInfo(liveId, session);
 const commentStream = client.createLiveCommentStream();
 commentStream.on('readable', () => {
   const comment: CommentInfo = commentStream.read();
-  if (comment.comment.match(/^\/hb ifseetno \d.*$/) && comment.premium === '3') {
-    return;
-  }
+  if (comment.comment.match(/^\/hb ifseetno \d.*$/) && comment.premium === '3') return;
+  if (comment.origin) return;
   console.log(
     `コメ番: ${comment.no}\tユーザーID: ${comment.user_id}\t時間: ${timestampToDateformat(comment.date)}\t
   コメント: ${comment.comment}\tプレミア: ${comment.premium}\t NGスコア: ${comment.score}\t 部屋: ${comment.roomLabel}`
