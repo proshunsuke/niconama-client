@@ -6,13 +6,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _addrPorts = require('./addrPorts');
-
-var _roomLabels = require('./roomLabels');
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ *
+ * RoomInfo
+ * this is RoomInfo base class. extends this class, and use it
+ */
 var RoomInfo = function () {
+
+  /**
+   *
+   * @param playerStatus
+   */
   function RoomInfo(playerStatus) {
     _classCallCheck(this, RoomInfo);
 
@@ -22,89 +28,89 @@ var RoomInfo = function () {
     this.setCurrentAddrPortIndex(playerStatus['ms']['addr'], Number(playerStatus['ms']['port']));
   }
 
+  /**
+   *
+   * @returns {roomType}
+   */
+
+
   _createClass(RoomInfo, [{
     key: 'current',
     value: function current() {
       return this.roomAddrPort(this.currentRoomIndex);
     }
-  }, {
-    key: 'arena',
-    value: function arena() {
-      var room = this.roomAddrPort(0);
-      room['roomLabel'] = this.community;
-      return room;
-    }
-  }, {
-    key: 'a',
-    value: function a() {
-      return this.roomAddrPort(1);
-    }
-  }, {
-    key: 'b',
-    value: function b() {
-      return this.roomAddrPort(2);
-    }
-  }, {
-    key: 'c',
-    value: function c() {
-      return this.roomAddrPort(3);
-    }
-  }, {
-    key: 'd',
-    value: function d() {
-      return this.roomAddrPort(4);
-    }
-  }, {
-    key: 'e',
-    value: function e() {
-      return this.roomAddrPort(5);
-    }
-  }, {
-    key: 'f',
-    value: function f() {
-      return this.roomAddrPort(6);
-    }
-  }, {
-    key: 'g',
-    value: function g() {
-      return this.roomAddrPort(7);
-    }
-  }, {
-    key: 'h',
-    value: function h() {
-      return this.roomAddrPort(8);
-    }
-  }, {
-    key: 'i',
-    value: function i() {
-      return this.roomAddrPort(9);
-    }
+
+    /**
+     *
+     * @param roomLabelIndex
+     * @returns {roomType}
+     */
+
   }, {
     key: 'roomAddrPort',
     value: function roomAddrPort(roomLabelIndex) {
-      var addrPorts = _addrPorts.ADDR_PORTS[this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex];
-      addrPorts['roomLabel'] = String(_roomLabels.ROOM_LABELS[roomLabelIndex]).substr(2, String(_roomLabels.ROOM_LABELS[roomLabelIndex]).length - 4);
+      return this.defaultRoomAddrPort(roomLabelIndex);
+    }
+
+    /**
+     *
+     * @param roomLabelIndex
+     * @returns {any}
+     */
+
+  }, {
+    key: 'defaultRoomAddrPort',
+    value: function defaultRoomAddrPort(roomLabelIndex) {
+      var addrPorts = this.addrPorts()[(this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex) % this.addrPorts().length];
+      addrPorts['roomLabel'] = String(this.roomLabels()[roomLabelIndex]).substr(2, String(this.roomLabels()[roomLabelIndex]).length - 4);
       addrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
+      addrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
       return addrPorts;
     }
+
+    /**
+     *
+     * @param roomLabel
+     */
+
   }, {
     key: 'setCurrentRoomIndex',
     value: function setCurrentRoomIndex(roomLabel) {
-      for (var i = 0; i < _roomLabels.ROOM_LABELS.length; i++) {
-        if (roomLabel.match(_roomLabels.ROOM_LABELS[i])) {
-          this.currentRoomIndex = i;
-        }
+      for (var i = 0; i < this.roomLabels().length; i++) {
+        if (roomLabel.match(this.roomLabels()[i])) this.currentRoomIndex = i;
       }
     }
+
+    /**
+     *
+     * @param addr
+     * @param port
+     */
+
   }, {
     key: 'setCurrentAddrPortIndex',
     value: function setCurrentAddrPortIndex(addr, port) {
-      for (var i = 0; i < _addrPorts.ADDR_PORTS.length; i++) {
-        if (_addrPorts.ADDR_PORTS[i]['addr'] === addr && _addrPorts.ADDR_PORTS[i]['port'] === port) {
+      for (var i = 0; i < this.addrPorts().length; i++) {
+        if (this.addrPorts()[i]['addr'] === addr && this.addrPorts()[i]['port'] === port) {
           this.currentAddrPortIndex = i;
           break;
         }
       }
+    }
+  }, {
+    key: 'allRooms',
+    value: function allRooms() {
+      throw new Error('Not implemented error');
+    }
+  }, {
+    key: 'addrPorts',
+    value: function addrPorts() {
+      throw new Error('Not implemented error');
+    }
+  }, {
+    key: 'roomLabels',
+    value: function roomLabels() {
+      throw new Error('Not implemented error');
     }
   }]);
 
