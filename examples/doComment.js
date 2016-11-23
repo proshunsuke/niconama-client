@@ -3,7 +3,7 @@
 /**
  *
  * ex.
- * % ./node_modules/.bin/flow; ./node_modules/.bin/babel-node examples/doComment.js lv282494871 user_session=user_session_13294831_62b5680bddf575eed836352e89c02b57b926254f0f28598c5393a1863430e1a2 comment big 184 red
+ * % ./node_modules/.bin/flow; ./node_modules/.bin/babel-node examples/doComment.js lv000000000 user_session=user_session_00000000_123abc comment big 184 red
  * No errors!
  * success to do comment. 1
  * success to do comment. 2
