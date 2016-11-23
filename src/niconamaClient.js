@@ -71,7 +71,7 @@ export default class NiconamaClient{
    * call this method after calling liveComments()
    *
    * options argument is a string with space separator. ex: "184 red big"
-   * options are is below
+   * options are below
    *
    * ****************************************************************************************************************
    * size: small, big

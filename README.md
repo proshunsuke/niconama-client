@@ -32,7 +32,7 @@ client.login(email, password)
 // user_session=user_session_00000_123abc
 ```
 
-### All rooms comments (co00000, 立ち見A, 立ち見B, etc)
+### Comments of all rooms  (co00000, 立ち見A, 立ち見B, etc)
 ```javascript
 import NiconamaClient from 'niconama-client';
 
@@ -81,11 +81,11 @@ Login to niconico, and receive session.
 
 ## setLiveInfo(liveId: string, session: string)
 
-create Live instance with liveId and session
+create Live instance with liveId and session. liveId is the string starting with `lv` in niconico live URL
 
-liveId is the string starting with "lv" in niconico live URL
 ex. http://live.nicovideo.jp/watch/lv0000000
-in this case, "lv0000000" is the liveId
+
+In this case, `lv0000000` is the liveId
 
 ## liveComments()
 
@@ -97,31 +97,23 @@ Get comments from niconico comment servers
 
 - Returns: `LiveCommentStream`
 
-Create LiveCommentStream instance.
-
-Call this method after calling [liveComments()](#liveComments())
+Create LiveCommentStream instance. Call this method after calling [liveComments()](#livecomments)
 
 ## doLiveComment(comment: string[, option: string])
 
-Do comment to niconico live broadcast
+Do comment to niconico live broadcast. Call this method after calling [liveComments()](#livecomments)
 
-Call this method after calling [liveComments()](#liveComments())
+Options argument is a string with space separator. ex: "184 red big". Options are below
 
-Options argument is a string with space separator. ex: "184 red big"
-
-Options are is below
-
-```
-size: small, big
-vertical position: ue/top, shita/bottom
-horizontal position: migi/right, hidari/left
-color:
- not premium: white, red, green, blue, cyan, yellow, purple, pink, orange
- premium or broadcaster: niconicowhite/white2, marineblue/blue2, madyellow/yellow2,
-                         passionorange/orange2, nobleviolet/purple2, elementalgreen/green2, truered/red2, black
- psyllium: fred, fpink, faqua, fblue, fyellow, fgreen, forange
-other: 184, hidden
-```
+| items | details |
+|:------------- |:-------------|
+| size      | small, big |
+| vertical position      | ue/top, shita/bottom |
+| horizontal position | migi/right, hidari/left |
+| color(not premium) | white, red, green, blue, cyan, yellow, purple, pink, orange |
+| color(premium or broadcaster) | niconicowhite/white2, marineblue/blue2, madyellow/yellow2, passionorange/orange2, nobleviolet/purple2, elementalgreen/green2, truered/red2, black |
+| color(psyllium) | passionorange/orange2, nobleviolet/purple2, elementalgreen/green2, truered/red2, black |
+| other | 184, hidden |
 
 ## License
 
