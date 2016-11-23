@@ -1,4 +1,7 @@
 // @flow
+/**
+ * CommentInfo
+ */
 export default class CommentInfo {
   thread: string;
   no: string;
@@ -13,6 +16,7 @@ export default class CommentInfo {
   score: string;
   yourpost: string;
   deleted: string;
+  origin: string;
   comment: string;
   roomLabel: string;
   constructor(
@@ -29,6 +33,7 @@ export default class CommentInfo {
     score: string,
     yourpost: string,
     deleted: string,
+    origin: string,
     comment: string,
     roomLabel: string
   ) {
@@ -46,6 +51,7 @@ export default class CommentInfo {
     this.score = score;
     this.yourpost = yourpost;
     this.deleted = deleted;
+    this.origin = origin;
     this.comment = comment;
     this.roomLabel = roomLabel;
   }
