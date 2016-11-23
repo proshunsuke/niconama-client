@@ -6,6 +6,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _circularArray = require('../lib/circularArray');
+
+var _circularArray2 = _interopRequireDefault(_circularArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -61,11 +67,12 @@ var RoomInfo = function () {
   }, {
     key: 'defaultRoomAddrPort',
     value: function defaultRoomAddrPort(roomLabelIndex) {
-      var addrPorts = this.addrPorts()[(this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex) % this.addrPorts().length];
-      addrPorts['roomLabel'] = String(this.roomLabels()[roomLabelIndex]).substr(2, String(this.roomLabels()[roomLabelIndex]).length - 4);
-      addrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
-      addrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
-      return addrPorts;
+      var arenaFrontIndex = this.currentAddrPortIndex - this.currentRoomIndex;
+      var currentAddrPorts = _circularArray2.default.get(this.addrPorts(), arenaFrontIndex + roomLabelIndex);
+      currentAddrPorts['roomLabel'] = String(this.roomLabels()[roomLabelIndex]).substr(2, String(this.roomLabels()[roomLabelIndex]).length - 4);
+      currentAddrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
+      currentAddrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
+      return currentAddrPorts;
     }
 
     /**
@@ -77,7 +84,9 @@ var RoomInfo = function () {
     key: 'setCurrentRoomIndex',
     value: function setCurrentRoomIndex(roomLabel) {
       for (var i = 0; i < this.roomLabels().length; i++) {
-        if (roomLabel.match(this.roomLabels()[i])) this.currentRoomIndex = i;
+        if (roomLabel.match(this.roomLabels()[i])) {
+          this.currentRoomIndex = i;
+        }
       }
     }
 
