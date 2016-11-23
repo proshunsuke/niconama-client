@@ -71,7 +71,7 @@ export default class NiconamaClient{
    * call this method after calling liveComments()
    *
    * options argument is a string with space separator. ex: "184 red big"
-   * options are is below
+   * options are below
    *
    * ****************************************************************************************************************
    * size: small, big
@@ -89,7 +89,7 @@ export default class NiconamaClient{
    * @param option
    * @returns {Promise.<any>}
    */
-  doLiveComment(comment: string, option: string): Promise<any> {
+  doLiveComment(comment: string, option: string = ''): Promise<any> {
     if (!this.liveClient) Promise.reject('Live instance is not defined');
     return this.liveClient.doComment(comment, option);
   }
