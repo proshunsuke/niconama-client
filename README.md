@@ -6,6 +6,8 @@
 
 A client library for niconico live broadcast.
 
+User live broadcast, channel broadcast, official broadcast comments can be obtained.
+
 ## Installation
 
 ```
@@ -81,7 +83,7 @@ Login to niconico, and receive session.
 
 ## setLiveInfo(liveId: string, session: string)
 
-create Live instance with liveId and session. liveId is the string starting with `lv` in niconico live URL
+Create Live instance with liveId and session. liveId is the string starting with `lv` in niconico live URL
 
 ex. http://live.nicovideo.jp/watch/lv0000000
 
@@ -103,7 +105,7 @@ Create LiveCommentStream instance. Call this method after calling [liveComments(
 
 Do comment to niconico live broadcast. Call this method after calling [liveComments()](#livecomments)
 
-Options argument is a string with space separator. ex: "184 red big". Options are below
+Options argument is a string with space separator. ex: `184 red big`. Options are below
 
 | items | details |
 |:------------- |:-------------|
@@ -114,6 +116,10 @@ Options argument is a string with space separator. ex: "184 red big". Options ar
 | color(premium or broadcaster) | niconicowhite/white2, marineblue/blue2, madyellow/yellow2, passionorange/orange2, nobleviolet/purple2, elementalgreen/green2, truered/red2, black |
 | color(psyllium) | passionorange/orange2, nobleviolet/purple2, elementalgreen/green2, truered/red2, black |
 | other | 184, hidden |
+
+## TODO
+
+- In channel broadcast, cannot get comments, for examples, from アリーナ席 to 立ち見席 and from 立ち見席 to アリーナ席.
 
 ## License
 
