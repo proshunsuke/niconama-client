@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LOGIN_URL = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -17,12 +16,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var LOGIN_URL = exports.LOGIN_URL = 'https://secure.nicovideo.jp/secure/login';
+var LOGIN_URL = 'https://secure.nicovideo.jp/secure/login';
+
+/**
+ * User client
+ */
 
 var User = function () {
   function User() {
     _classCallCheck(this, User);
   }
+
+  /**
+   *
+   * @param email
+   * @param password
+   * @returns {Promise.<T>}
+   */
+
 
   _createClass(User, [{
     key: 'login',
@@ -39,13 +50,11 @@ var User = function () {
         }
       }).then(function (body) {
         var session = cookieStore._jar.store.findCookie('nicovideo.jp', '/', 'user_session', function (err, cookie) {
-          if (cookie) {
-            return 'user_session=' + cookie.value + ';';
-          }
           if (err) {
             return Promise.reject(err);
           }
-          return Promise.reject('Cannot get user session. Please check your email or password.');
+          if (typeof cookie === 'undefined') return Promise.reject('Cannot get user session. Please check your email or password.');
+          return 'user_session=' + cookie.value + ';';
         });
         return Promise.resolve(session);
       }).catch(function (err) {
@@ -58,3 +67,4 @@ var User = function () {
 }();
 
 exports.default = User;
+module.exports = exports['default'];

@@ -1,5 +1,5 @@
 // @flow
-export const ROOM_LABELS: Array<any> = [
+export const ROOM_LABELS_COMMUNITY: Array<any> = [
   /^co/,
   /^立ち見A列$/,
   /^立ち見B列$/,

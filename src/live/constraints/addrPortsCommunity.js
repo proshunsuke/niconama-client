@@ -1,5 +1,5 @@
 // @flow
-export const ADDR_PORTS: Array<any> = [
+export const ADDR_PORTS_COMMUNITY: Array<any> = [
   {addr: 'msg101.live.nicovideo.jp', port: 2805},
   {addr: 'msg102.live.nicovideo.jp', port: 2815},
   {addr: 'msg103.live.nicovideo.jp', port: 2825},
