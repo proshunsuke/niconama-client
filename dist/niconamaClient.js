@@ -104,7 +104,7 @@ var NiconamaClient = function () {
      * call this method after calling liveComments()
      *
      * options argument is a string with space separator. ex: "184 red big"
-     * options are is below
+     * options are below
      *
      * ****************************************************************************************************************
      * size: small, big
@@ -125,7 +125,9 @@ var NiconamaClient = function () {
 
   }, {
     key: 'doLiveComment',
-    value: function doLiveComment(comment, option) {
+    value: function doLiveComment(comment) {
+      var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
       if (!this.liveClient) Promise.reject('Live instance is not defined');
       return this.liveClient.doComment(comment, option);
     }
