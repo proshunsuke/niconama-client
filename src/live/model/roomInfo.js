@@ -1,4 +1,5 @@
 // @flow
+import CircularArray from '../lib/circularArray';
 export type roomType = { addr: string; port: number; thread: number; roomLabel: string; isCurrent: boolean};
 
 /**
@@ -46,11 +47,12 @@ export default class RoomInfo {
    * @returns {any}
    */
   defaultRoomAddrPort(roomLabelIndex: number) :roomType {
-    let addrPorts = this.addrPorts()[(this.currentAddrPortIndex - this.currentRoomIndex + roomLabelIndex) % this.addrPorts().length];
-    addrPorts['roomLabel'] = String(this.roomLabels()[roomLabelIndex]).substr(2, String(this.roomLabels()[roomLabelIndex]).length - 4);
-    addrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
-    addrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
-    return addrPorts;
+    const arenaFrontIndex = this.currentAddrPortIndex - this.currentRoomIndex;
+    let currentAddrPorts = CircularArray.get(this.addrPorts(), arenaFrontIndex + roomLabelIndex);
+    currentAddrPorts['roomLabel'] = String(this.roomLabels()[roomLabelIndex]).substr(2, String(this.roomLabels()[roomLabelIndex]).length - 4);
+    currentAddrPorts['thread'] = this.thread - this.currentRoomIndex + roomLabelIndex;
+    currentAddrPorts['isCurrent'] = this.currentRoomIndex === roomLabelIndex;
+    return currentAddrPorts;
   }
 
   /**
@@ -59,7 +61,9 @@ export default class RoomInfo {
    */
   setCurrentRoomIndex(roomLabel: string) {
     for(let i = 0; i < this.roomLabels().length; i++) {
-      if (roomLabel.match(this.roomLabels()[i])) this.currentRoomIndex = i;
+      if (roomLabel.match(this.roomLabels()[i])) {
+        this.currentRoomIndex = i;
+      }
     }
   }
 
